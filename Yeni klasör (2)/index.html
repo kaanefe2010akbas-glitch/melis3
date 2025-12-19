@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Melis 💖</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body{
+  background:black;
+  color:white;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ORTA KUTU */
+.box{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:90%;
+  max-width:480px;
+  padding:30px;
+  border:2px solid #ff4f81;
+  border-radius:20px;
+  text-align:center;
+  background:black;
+  z-index:5;
+}
+
+/* BUTON */
+button{
+  margin-top:20px;
+  padding:14px 40px;
+  border:none;
+  border-radius:30px;
+  background:#ff4f81;
+  color:white;
+  font-size:1.1em;
+  cursor:pointer;
+}
+
+/* PUAN */
+#score{
+  position:fixed;
+  top:15px;
+  right:20px;
+  font-size:1.1em;
+  opacity:0.85;
+}
+
+/* KALPLER */
+.heart{
+  position:absolute;
+  font-size:46px;        /* BÜYÜK */
+  cursor:pointer;
+  animation:floatUp 14s linear forwards; /* YAVAŞ */
+}
+
+@keyframes floatUp{
+  from{ transform:translateY(110vh); }
+  to{ transform:translateY(-200px); }
+}
+</style>
+</head>
+
+<body>
+
+<div id="score">Kalp: 0</div>
+
+<!-- MÜZİK -->
+<audio id="music">
+  <source src="senden-daha-guzel.mp3" type="audio/mpeg">
+</audio>
+
+<!-- BAŞLANGIÇ -->
+<div class="box" id="startBox">
+  <h1>Melis 💖</h1>
+  <p style="margin-top:15px; line-height:1.6;">
+    Bu sayfa rastgele açılmadı.<br><br>
+    Buradaki her şey biraz his,  
+    biraz cesaret,  
+    biraz da sana dair.<br><br>
+    Kalplere dokun, acele etme.
+  </p>
+  <button onclick="startGame()">Başla 💖</button>
+</div>
+
+<!-- MESAJ KUTUSU -->
+<div class="box" id="messageBox" style="display:none;">
+  <p id="messageText" style="line-height:1.6;">
+    Kalpler gelmeye başlayacak…
+  </p>
+</div>
+
+<script>
+const music = document.getElementById("music");
+const startBox = document.getElementById("startBox");
+const messageBox = document.getElementById("messageBox");
+const messageText = document.getElementById("messageText");
+const scoreText = document.getElementById("score");
+
+let score = 0;
+let active = false;
+let interval;
+
+/* ŞARKI ZAMANLARI */
+const startTime = 5;     // 00:05
+const endTime   = 225;   // 03:45
+
+const messages = [
+  "Bazı insanlar konuşmadan bile huzur verir.",
+  "Gülüşünün özel bir tarafı var, fark edilmeden etkiliyor.",
+  "Bu kalp sana geldi çünkü buraya yakıştın.",
+  "Zamanın yavaşladığı anlar var ya… sen öylesin.",
+  "Seni düşünmek, günün en sakin anı gibi.",
+  "Bazı hisler açıklanmaz, sadece yaşanır.",
+  "Burada çıkan kalpler biraz cesaret içeriyor.",
+  "Tesadüf diye bir şey yoktur, bazen sadece zamanlama vardır.",
+  "Bu sayfayı yapan biri var ve şu an gülümsüyor.",
+  "Senden daha güzel bir şey varsa, o da hissettirdiklerin."
+];
+
+function startGame(){
+  startBox.style.display = "none";
+  messageBox.style.display = "block";
+  active = true;
+
+  music.currentTime = startTime;
+  music.play();
+
+  interval = setInterval(createHeart, 1600);
+
+  music.ontimeupdate = () => {
+    if (music.currentTime >= endTime) {
+      music.pause();
+      active = false;
+      clearInterval(interval);
+      endGame();
+    }
+  };
+}
+
+function createHeart(){
+  if(!active) return;
+
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "💖";
+  heart.style.left = Math.random() * 85 + "%";
+  document.body.appendChild(heart);
+
+  heart.onclick = () => {
+    score++;
+    scoreText.innerText = "Kalp: " + score;
+    messageText.innerText =
+      messages[Math.floor(Math.random() * messages.length)];
+    heart.remove();
+  };
+
+  setTimeout(() => heart.remove(), 14000);
+}
+
+function endGame(){
+  messageText.innerHTML =
+    "Şarkı bitti 🎵<br><br>" +
+    "Topladığın kalp: <strong>" + score + "</strong><br><br>" +
+    "Ama gerçek şu ki:<br><br>" +
+    "<strong>Bu kalplerin hiçbiri senden daha güzel değil.</strong><br><br>" +
+    "İstersen bu hikâyeyi gerçek hayatta da devam ettirebiliriz 🙂";
+}
+</script>
+
+</body>
+</html>
