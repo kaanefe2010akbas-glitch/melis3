@@ -1,61 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Melis ❤️</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background:black;
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+    height:100vh;
+    overflow:hidden;
+}
+
+/* ORTA KUTU */
+#box{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:85%;
+    max-width:500px;
+    padding:25px;
+    border:2px solid #ff4f81;
+    border-radius:20px;
+    text-align:center;
+    background:rgba(0,0,0,0.8);
+    z-index:10;
+    min-height:150px;
+}
+
+/* BAŞLA */
+#startBtn{
+    padding:15px 30px;
+    border:none;
+    border-radius:30px;
+    background:#ff4f81;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+
+/* SÖZLER */
+#text{
+    font-size:18px;
+    line-height:1.6;
+    margin-top:10px;
+}
+
+/* KALP */
+.heart{
+    position:absolute;
+    font-size:40px;
+    cursor:pointer;
+    animation:float 10s linear infinite;
+}
+
+@keyframes float{
+    from{transform:translateY(100vh);}
+    to{transform:translateY(-10vh);}
+}
+</style>
+</head>
+
+<body>
+
+<div id="box">
+    <button id="startBtn">❤️ Başla</button>
+    <div id="text"></div>
+</div>
+
+<audio id="music" src="senden-daha-guzel.mp3"></audio>
+
 <script>
+const startBtn = document.getElementById("startBtn");
+const text = document.getElementById("text");
+const box = document.getElementById("box");
 const music = document.getElementById("music");
-const startBox = document.getElementById("startBox");
-const messageBox = document.getElementById("messageBox");
 
-const startTime = 5;
-const endTime = 225;
-let score = 0;
-let interval;
+/* 💌 ROMANTİK SÖZLER */
+const words = [
+"Melis…",
+"Bu site sadece bir kod değil",
+"Bu site kalbimden gelen bir şey",
+"Seni düşündüğüm her an içim ısınıyor",
+"Gülüşün karanlık gecelerime ışık oluyor",
+"Yanımda olmasan bile kalbim hep seninle",
+"Sana baktığımda geleceği görüyorum",
+"Belki kusurluyum ama sevgim gerçek",
+"Elini tutsam zaman durur gibi",
+"Bu kalpler sana atıyor",
+"Her tıklayışımda biraz daha sana bağlanıyorum",
+"Şarkı bitene kadar kalbim senin",
+"Ve bittiğinde bile…",
+"Ben hâlâ seni seçiyorum ❤️"
+];
 
-function startGame(){
-  startBox.remove();
-  messageBox.style.display = "block";
+let index = 0;
 
-  music.currentTime = startTime;
-  music.play().catch(()=>alert("Tarayıcı sesi engelledi"));
+/* BAŞLA */
+startBtn.onclick = () => {
+    startBtn.remove();
+    music.currentTime = 5;
+    music.play();
 
-  interval = setInterval(createHeart, 1400);
+    setTimeout(()=>{
+        music.pause();
+        final();
+    }, (225-5)*1000);
 
-  music.ontimeupdate = () => {
-    if(music.currentTime >= endTime){
-      music.pause();
-      clearInterval(interval);
-      finalMessage();
+    showText();
+    createHearts();
+};
+
+/* SÖZ GÖSTER */
+function showText(){
+    if(index < words.length){
+        text.innerHTML = words[index];
+        index++;
+        setTimeout(showText, 3500);
     }
-  };
 }
 
-function createHeart(){
-  const heart = document.createElement("div");
-  heart.className = "heart";
-  heart.innerHTML = "❤️";
-  heart.style.left = Math.random()*90 + "vw";
-  heart.style.bottom = "-30px";
+/* KALP OLUŞTUR */
+function createHearts(){
+    setInterval(()=>{
+        const heart = document.createElement("div");
+        heart.className="heart";
+        heart.innerHTML="❤️";
+        heart.style.left=Math.random()*100+"%";
+        heart.style.animationDuration=(8+Math.random()*5)+"s";
 
-  heart.onclick = () => {
-    score++;
-    heart.innerHTML = "✨";
-    setTimeout(()=>heart.remove(),200);
-    messageBox.innerHTML = `
-      <h2>Melis 💖</h2>
-      <p>Kalp toplandı: <b>${score}</b></p>
-      <p>Her biri sana olan hislerimden biri.</p>
-    `;
-  };
+        heart.onclick=()=>{
+            text.innerHTML = words[Math.floor(Math.random()*words.length)];
+        };
 
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),8000);
+        document.body.appendChild(heart);
+        setTimeout(()=>heart.remove(),12000);
+    },1500);
 }
 
-function finalMessage(){
-  messageBox.innerHTML = `
-    <h2>Melis…</h2>
-    <p>
-      Şarkı bitti ama kalbim bitmedi.<br><br>
-      Topladığın ${score} kalp,<br>
-      sana olan hislerimin sadece küçük bir kısmı.
-    </p>
-  `;
+/* FİNAL */
+function final(){
+    text.innerHTML = "Melis… bu şarkı bitti ama hislerim bitmedi 🌹";
 }
 </script>
+
+</body>
+</html>
