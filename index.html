@@ -3,147 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <title>Melis ❤️</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
 body{
-    background:black;
-    color:white;
-    font-family:Arial, Helvetica, sans-serif;
-    height:100vh;
-    overflow:hidden;
+  margin:0;
+  background:black;
+  color:white;
+  font-family:Arial, sans-serif;
+  overflow:hidden;
 }
 
-/* ORTA KUTU */
+#start{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:20px;
+  z-index:10;
+}
+
+button{
+  padding:18px 40px;
+  font-size:20px;
+  border:none;
+  border-radius:30px;
+  background:#ff4f81;
+  color:white;
+  cursor:pointer;
+}
+
 #box{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    width:85%;
-    max-width:500px;
-    padding:25px;
-    border:2px solid #ff4f81;
-    border-radius:20px;
-    text-align:center;
-    background:rgba(0,0,0,0.8);
-    z-index:10;
-    min-height:150px;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:85%;
+  max-width:480px;
+  padding:25px;
+  border:2px solid #ff4f81;
+  border-radius:20px;
+  text-align:center;
+  display:none;
 }
 
-/* BAŞLA */
-#startBtn{
-    padding:15px 30px;
-    border:none;
-    border-radius:30px;
-    background:#ff4f81;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-}
-
-/* SÖZLER */
-#text{
-    font-size:18px;
-    line-height:1.6;
-    margin-top:10px;
-}
-
-/* KALP */
 .heart{
-    position:absolute;
-    font-size:40px;
-    cursor:pointer;
-    animation:float 10s linear infinite;
+  position:fixed;
+  font-size:42px;
+  cursor:pointer;
+  animation:rise 10s linear forwards;
 }
 
-@keyframes float{
-    from{transform:translateY(100vh);}
-    to{transform:translateY(-10vh);}
+@keyframes rise{
+  from{bottom:-50px;opacity:1}
+  to{bottom:110%;opacity:0}
 }
 </style>
 </head>
 
 <body>
 
-<div id="box">
-    <button id="startBtn">❤️ Başla</button>
-    <div id="text"></div>
+<!-- BAŞLANGIÇ -->
+<div id="start">
+  <h1>Melis 💖</h1>
+  <button onclick="startAll()">▶️ Başlat & Müziği Aç</button>
 </div>
 
-<audio id="music" src="senden-daha-guzel.mp3"></audio>
+<!-- ORTA KUTU -->
+<div id="box">
+  <p id="text">💗</p>
+</div>
+
+<!-- AUDIO (controls YOK ama kullanıcı jesti var) -->
+<audio id="music" preload="auto">
+  <source src="senden-daha-guzel.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-const startBtn = document.getElementById("startBtn");
-const text = document.getElementById("text");
-const box = document.getElementById("box");
 const music = document.getElementById("music");
+const box = document.getElementById("box");
+const text = document.getElementById("text");
 
-/* 💌 ROMANTİK SÖZLER */
+const startTime = 5;
+const endTime = 225;
+
 const words = [
-"Melis…",
-"Bu site sadece bir kod değil",
-"Bu site kalbimden gelen bir şey",
-"Seni düşündüğüm her an içim ısınıyor",
-"Gülüşün karanlık gecelerime ışık oluyor",
-"Yanımda olmasan bile kalbim hep seninle",
-"Sana baktığımda geleceği görüyorum",
-"Belki kusurluyum ama sevgim gerçek",
-"Elini tutsam zaman durur gibi",
-"Bu kalpler sana atıyor",
-"Her tıklayışımda biraz daha sana bağlanıyorum",
-"Şarkı bitene kadar kalbim senin",
-"Ve bittiğinde bile…",
-"Ben hâlâ seni seçiyorum ❤️"
+  "Melis…",
+  "Bu sayfa sadece bir site değil",
+  "Biraz cesaret, biraz his",
+  "Seni düşündüğüm her an içim ısınıyor",
+  "Gülüşün gerçekten farklı",
+  "Bazı insanlar kalbe dokunur",
+  "Sen öylesin",
+  "Her kalp biraz daha sana",
+  "Şarkı bitene kadar buradayım",
+  "Ve bittiğinde bile…",
+  "Ben hâlâ seni seçiyorum ❤️"
 ];
 
-let index = 0;
+let wordIndex = 0;
+let heartInterval;
 
-/* BAŞLA */
-startBtn.onclick = () => {
-    startBtn.remove();
-    music.currentTime = 5;
-    music.play();
+/* TEK VE GÜÇLÜ KULLANICI ETKİLEŞİMİ */
+function startAll(){
+  document.getElementById("start").remove();
+  box.style.display = "block";
 
-    setTimeout(()=>{
-        music.pause();
-        final();
-    }, (225-5)*1000);
+  // 🔊 SESİ ZORLA
+  music.currentTime = startTime;
+  music.volume = 1;
+  music.play().then(()=>{
+    console.log("Müzik çalıyor");
+  }).catch(err=>{
+    alert("Tarayıcı sesi engelledi. Ses simgesini kontrol et.");
+    console.error(err);
+  });
 
-    showText();
-    createHearts();
-};
+  showWords();
+  heartInterval = setInterval(createHeart, 1500);
 
-/* SÖZ GÖSTER */
-function showText(){
-    if(index < words.length){
-        text.innerHTML = words[index];
-        index++;
-        setTimeout(showText, 3500);
+  music.ontimeupdate = ()=>{
+    if(music.currentTime >= endTime){
+      music.pause();
+      clearInterval(heartInterval);
+      text.innerHTML = "Şarkı bitti ama hislerim bitmedi 🌹";
     }
+  };
 }
 
-/* KALP OLUŞTUR */
-function createHearts(){
-    setInterval(()=>{
-        const heart = document.createElement("div");
-        heart.className="heart";
-        heart.innerHTML="❤️";
-        heart.style.left=Math.random()*100+"%";
-        heart.style.animationDuration=(8+Math.random()*5)+"s";
-
-        heart.onclick=()=>{
-            text.innerHTML = words[Math.floor(Math.random()*words.length)];
-        };
-
-        document.body.appendChild(heart);
-        setTimeout(()=>heart.remove(),12000);
-    },1500);
+/* SÖZLER */
+function showWords(){
+  if(wordIndex < words.length){
+    text.innerHTML = words[wordIndex];
+    wordIndex++;
+    setTimeout(showWords, 3500);
+  }
 }
 
-/* FİNAL */
-function final(){
-    text.innerHTML = "Melis… bu şarkı bitti ama hislerim bitmedi 🌹";
+/* KALPLER */
+function createHeart(){
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.innerHTML = "❤️";
+  h.style.left = Math.random()*90 + "vw";
+
+  h.onclick = ()=>{
+    text.innerHTML = words[Math.floor(Math.random()*words.length)];
+    h.remove();
+  };
+
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),10000);
 }
 </script>
 
