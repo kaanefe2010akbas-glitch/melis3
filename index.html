@@ -1,90 +1,3 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Melis ❤️</title>
-
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family: Arial, sans-serif;
-}
-
-body{
-  background:black;
-  color:white;
-  height:100vh;
-  overflow:hidden;
-}
-
-#startBox, #messageBox{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  width:90%;
-  max-width:420px;
-  padding:30px;
-  border:2px solid #ff4f81;
-  border-radius:20px;
-  text-align:center;
-  background:black;
-}
-
-button{
-  margin-top:20px;
-  padding:15px 35px;
-  font-size:18px;
-  border:none;
-  border-radius:30px;
-  background:#ff4f81;
-  color:white;
-  cursor:pointer;
-}
-
-.heart{
-  position:absolute;
-  color:#ff4f81;
-  font-size:28px;
-  animation:float 8s linear forwards;
-}
-
-@keyframes float{
-  from{
-    transform:translateY(0);
-    opacity:1;
-  }
-  to{
-    transform:translateY(-800px);
-    opacity:0;
-  }
-}
-</style>
-</head>
-
-<body>
-
-<div id="startBox">
-  <h1>Melis 💖</h1>
-  <p>Bu site sadece sana özel.</p>
-  <button onclick="startGame()">Başla</button>
-</div>
-
-<div id="messageBox" style="display:none;">
-  <h2>Seni anlatmak kelimelere sığmıyor…</h2>
-  <p>
-    Gülüşün kalbimin en sessiz yerini bile uyandırıyor.<br><br>
-    Bu şarkı çalarken, gökyüzüne yükselen her kalp
-    sana olan hislerimden bir parça.
-  </p>
-</div>
-
-<audio id="music" preload="auto">
-  <source src="senden-daha-guzel.mp3" type="audio/mpeg">
-</audio>
-
 <script>
 const music = document.getElementById("music");
 const startBox = document.getElementById("startBox");
@@ -92,16 +5,17 @@ const messageBox = document.getElementById("messageBox");
 
 const startTime = 5;
 const endTime = 225;
+let score = 0;
 let interval;
 
 function startGame(){
-  startBox.style.display = "none";
+  startBox.remove();
   messageBox.style.display = "block";
 
   music.currentTime = startTime;
-  music.play();
+  music.play().catch(()=>alert("Tarayıcı sesi engelledi"));
 
-  interval = setInterval(createHeart, 1600);
+  interval = setInterval(createHeart, 1400);
 
   music.ontimeupdate = () => {
     if(music.currentTime >= endTime){
@@ -116,10 +30,21 @@ function createHeart(){
   const heart = document.createElement("div");
   heart.className = "heart";
   heart.innerHTML = "❤️";
-  heart.style.left = Math.random()*100 + "vw";
+  heart.style.left = Math.random()*90 + "vw";
   heart.style.bottom = "-30px";
-  document.body.appendChild(heart);
 
+  heart.onclick = () => {
+    score++;
+    heart.innerHTML = "✨";
+    setTimeout(()=>heart.remove(),200);
+    messageBox.innerHTML = `
+      <h2>Melis 💖</h2>
+      <p>Kalp toplandı: <b>${score}</b></p>
+      <p>Her biri sana olan hislerimden biri.</p>
+    `;
+  };
+
+  document.body.appendChild(heart);
   setTimeout(()=>heart.remove(),8000);
 }
 
@@ -127,13 +52,10 @@ function finalMessage(){
   messageBox.innerHTML = `
     <h2>Melis…</h2>
     <p>
-      Şarkı bitti ama hislerim bitmedi.<br><br>
-      Belki bu sadece küçük bir site,
-      ama kalbimin tamamı senin.
+      Şarkı bitti ama kalbim bitmedi.<br><br>
+      Topladığın ${score} kalp,<br>
+      sana olan hislerimin sadece küçük bir kısmı.
     </p>
   `;
 }
 </script>
-
-</body>
-</html>
